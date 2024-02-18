@@ -1,12 +1,26 @@
 import mongoose from 'mongoose';
 
 const Connection = async (username, password) => {
-    const URL = `mongodb://${username}:${password}@insta-clone-shard-00-00.tk3ep.mongodb.net:27017,insta-clone-shard-00-01.tk3ep.mongodb.net:27017,insta-clone-shard-00-02.tk3ep.mongodb.net:27017/?ssl=true&replicaSet=atlas-545t1k-shard-0&authSource=admin&retryWrites=true&w=majority`;
+    const dbName = 'Clones';
+    const collectionName = 'Instagram';
+
+    const URL = process.env.MONGO_URI
+
     try {
         await mongoose.connect(URL, { useNewUrlParser: true })
+        const instagramSchema = new mongoose.Schema({
+            username: String,
+            post: String,
+            likes: Number
+        });
+
+        // Access the Instagram collection
+        const Instagram = mongoose.model('Instagram', instagramSchema, collectionName);
         console.log('Database connected successfully');
+        return Instagram;
     } catch (error) {
         console.log('Error while connecting to the database ', error);
+        throw error;
     }
 };
 
